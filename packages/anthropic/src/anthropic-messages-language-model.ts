@@ -1886,11 +1886,18 @@ export class AnthropicMessagesLanguageModel implements LanguageModelV3 {
             }
 
             case 'message_delta': {
-              if (
-                value.usage.input_tokens != null &&
-                usage.input_tokens !== value.usage.input_tokens
-              ) {
+              if (value.usage.input_tokens != null) {
                 usage.input_tokens = value.usage.input_tokens;
+              }
+              if (value.usage.cache_read_input_tokens != null) {
+                usage.cache_read_input_tokens =
+                  value.usage.cache_read_input_tokens;
+              }
+              if (value.usage.cache_creation_input_tokens != null) {
+                usage.cache_creation_input_tokens =
+                  value.usage.cache_creation_input_tokens;
+                cacheCreationInputTokens =
+                  value.usage.cache_creation_input_tokens;
               }
               usage.output_tokens = value.usage.output_tokens;
 

@@ -4894,6 +4894,32 @@ describe('AnthropicMessagesLanguageModel', () => {
       });
     });
 
+    it('should use cache tokens from message_delta when present', async () => {
+      prepareChunksFixtureResponse('anthropic-message-delta-cache-tokens');
+
+      const { stream } = await model.doStream({
+        prompt: TEST_PROMPT,
+      });
+
+      const result = await convertReadableStreamToArray(stream);
+      const finishPart = result.find(part => part.type === 'finish');
+
+      expect(finishPart).toMatchObject({
+        type: 'finish',
+        usage: {
+          inputTokens: {
+            total: 32,
+            noCache: 17,
+            cacheRead: 5,
+            cacheWrite: 10,
+          },
+          outputTokens: {
+            total: 2,
+          },
+        },
+      });
+    });
+
     it('should stream reasoning deltas', async () => {
       server.urls['https://api.anthropic.com/v1/messages'].response = {
         type: 'stream-chunks',
